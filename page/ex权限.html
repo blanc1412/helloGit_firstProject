@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        a{
+            text-decoration: none;
+            color:white;
+        }
+        @media screen and (min-width:1200px) {
+            html{
+                font-size: 20px;
+                transition:all 1s;
+            }
+        }
+        @media screen and (min-width:768px) and (max-width: 1200px){
+            html{
+                font-size: 16px;
+                transition:all 1s;
+            }
+        }
+        @media screen and (max-width:768px){
+            html{
+                font-size: 14px;
+                transition:all 1s;
+            }
+        }
+        html,body{
+            height: 100%;
+        }
+        #left{
+            height: 100%;
+            background: green;
+            float: left;
+            width: 120px;
+            font-size: 1.2rem;
+        }
+        #right{
+            margin-left: 120px;
+            height: 100%;
+            background: red;
+        }
+        .dropdown{
+            text-indent: 1rem;
+            height: 0;
+            overflow: hidden;
+            font-size: 1rem;
+            background-color: #0077aa;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="left">
+        <ul>
+            <li>
+                <a href="javascript:;" data-src="./pages/home.html"  id="home">首页</a>
+                <!--<a href="./pages/home.html" target="content" >首页</a>-->
+            </li>
+            <li>
+                <a href="javascript:;">一级菜单</a>
+                <ul class="dropdown">
+                   <li><a href="javascript:;" data-privacy="1" data-src="./pages/departmentList.html" >部门管理</a></li>
+                   <!--<li><a href="./pages/departmentList.html" target="content" >部门管理</a></li>-->
+                   <li><a href="javascript:;" data-privacy="2" data-src="./pages/employee.html">人员管理</a></li>
+                   <!--<li><a href="./pages/employee.html" target="content">人员管理</a></li>-->
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <div id="right">
+        <!--<iframe name="content" src="./pages/home.html" frameborder="0"  ></iframe>-->
+    </div>
+
+    <script src="../utils/jquery-3.5.1.js"></script>
+
+    <script>
+        $('#right').load('./pages/home.html')
+        $('#left a').click(function(){
+            if($(this).data('src')){
+                $('#right').load($(this).data('src'))
+            }else{
+                $(this).next('.dropdown').css('height','auto')
+            }
+        })
+        /*
+         location.search  url的问号以后的字符串
+         location.hash  url的#后面的
+        * */
+        var privacy = location.hash.substr(1);
+        console.log(privacy);
+        switch (privacy){
+            case '':
+                location.href='../pages/login.html';
+                break;
+            case '1':
+                break;
+            case '2':
+                $('[data-privacy="1"]').hide();
+                break;
+            case '3':
+                $('[data-privacy="1"]').hide();
+                $('[data-privacy="2"]').hide();
+                break;
+            default:
+                console.log('没有权限数据');
+                break;
+        }
+    </script>
+</body>
+</html>

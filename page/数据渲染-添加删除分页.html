@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        #pageBox li{
+            float: left;
+            width: 20px;
+            height: 20px;
+            line-height: 20px;
+            text-align: center;
+            border: 1px solid gray;
+            border-radius: 5px;
+            margin: 10px;
+        }
+        #pageBox li:hover{
+            cursor: pointer;
+            background-color: gray;
+        }
+        #pageBox .active{
+            background-color: #0077aa;
+        }
+    </style>
+
+</head>
+<body>
+<input type="number" id="ids" placeholder="id"/>
+<input type="text" id="userName" placeholder="userName"/>
+<input type="radio" name="sex" value="0"/> 女
+<input type="radio" name="sex" value="1"/> 男
+
+<button id="add">添加</button>
+
+    <table id="personInfo" border="1" cellspacing="0" width="400px" align="center">
+        <caption>人员信息</caption>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Sex</th>
+                <th>option</th>  <!--删除修改的操作-->
+            </tr>
+        </thead>
+        <tbody>
+           <!--
+            需要js完成
+            获取本地存储的数据，每条数据就是一行
+            tr》td
+            创建好每一行tr，把tr给tbody-->
+           <!-- <tr>
+                <td>1000</td>
+                <td>user0</td>
+                <td>女</td>
+                <td><a href="">delete</a> <button>edit</button></td>
+            </tr>
+            <tr>
+                <td>1000</td>
+                <td>user0</td>
+                <td>女</td>
+                <td><a href="">delete</a> <button>edit</button></td>
+            </tr> <tr>
+                <td>1000</td>
+                <td>user0</td>
+                <td>女</td>
+                <td><a href="">delete</a> <button>edit</button></td>
+            </tr> <tr>
+                <td>1000</td>
+                <td>user0</td>
+                <td>女</td>
+                <td><a href="">delete</a> <button>edit</button></td>
+            </tr>-->
+        </tbody>
+    </table>
+    <ul id="pageBox">
+        <!--<li class="active">1</li>
+        <li>2</li>
+        <li>3</li>
+        <li>4</li>-->
+    </ul>
+    <script src="../js/jquery-3.5.1.min.js"></script>
+<script>
+    var datas = [
+        {
+            id:0,
+            name:'user0',
+            sex:'女',
+            city:'成都'
+        },
+        {
+            id:1,
+            name:'user0',
+            sex:'女',
+            city:'成都'
+        },
+        {
+            id:2,
+            name:'user0',
+            sex:'女',
+            city:'成都'
+        },
+        {
+            id:3,
+            name:'user0',
+            sex:'女',
+            city:'成都'
+        },
+        {
+            id:4,
+            name:'user0',
+            sex:'女',
+            city:'成都'
+        },
+        {
+            id:5,
+            name:'user0',
+            sex:'女',
+            city:'成都'
+        }
+    ];
+    var pageData = [];
+    var tableBody = document.querySelector('#personInfo tbody');
+    var pageBox = document.querySelector('#pageBox');
+    initTable();
+    function initTable(){//进入页面的初始状态，初始化表格
+      //默认获取第一页的数据
+        getPageData(datas,1,5);
+//        渲染页面数据
+        render(pageData);
+        //        渲染分页
+        getPage(datas.length,5);
+    }
+    function render(datas){
+        var trData = ''
+        for(var i =0;i<datas.length;i++){
+            trData += "<tr>" +
+            "<td>"+datas[i].id+"</td>" +
+            "<td>"+datas[i].name+"</td>" +
+            "<td>"+datas[i].sex+"</td>" +
+            "<td><button class='delBtn' data-index='"+i+"'>删除</button></td>" +
+            "</tr>" ;
+        }
+        tableBody.innerHTML = trData;
+    }
+    function getPage(total,numPerPage){//
+        var pageNum = Math.ceil(total/numPerPage);
+        var lis='';
+        for(let i=1;i<=pageNum;i++){
+            if(i == 1){
+                lis += '<li class="active">'+i+'</li>'
+            }else{
+                lis += '<li>'+i+'</li>'
+            }
+        }
+        pageBox.innerHTML = lis;
+    }
+    function getPageData(arr,index,numPerPage){
+        //1  0*numPerPage ~  numPerPage-1
+        //2  numPerPage ~  2numPerPage-1
+        //3  2numPerPage ~  3numPerPage-1
+        pageData = arr.slice((index-1)*numPerPage, index * numPerPage)
+    }
+//分页点击部分
+ /*对于新创建的分页节点，没法点击进行分页
+   $(pageBox).find('li').click(function(){
+     //        console.log($(this).index());
+     getPageData(datas,$(this).index()+1,5);
+     render(pageData);
+     $(this).addClass('active').siblings('li').removeClass('active');
+     });
+     */
+    $(pageBox).on('click','li',function(){
+        getPageData(datas,Number($(this).html()),5);
+        render(pageData);
+        $(this).addClass('active').siblings('li').removeClass('active');
+    });
+    //添加功能
+    var addBtn = $('#add');
+
+    addBtn.click(function(){
+        var ids = $('#ids');
+        var userName = $('#userName');
+        var sex = $('[name="sex"]:checked');
+        //先验证，可以是输入时候，input  keyup blur
+        datas.unshift({
+            id:Number(ids.val()),
+            name:userName.val(),
+            sex: sex.val() == '1' ? '男': '女'
+        });
+        initTable();
+    })
+
+    $(tableBody).on('click','.delBtn',function(){
+//        console.log(this)
+       //在数组中删除数据
+        datas.splice($(this).data('index'),1);
+        //渲染页面。渲染分页
+        initTable();
+    })
+</script>
+</body>
+</html>
